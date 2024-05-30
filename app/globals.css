@@ -3,7 +3,11 @@
 @tailwind utilities;
 
 * {
-  @apply box-border;
+  @apply box-border duration-300;
+}
+
+body {
+  overflow-x: hidden;
 }
 
 @layer utilities {
