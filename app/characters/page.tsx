@@ -108,17 +108,33 @@ const CharactersTab = () => {
     setFilterByGender(status);
   };
 
+  let baseURL = "https://rickandmortyapi.com/api/character";
+
+  const constructURL = (nameQuery: string) => {
+    let fetchURL = baseURL;
+    let params = new URLSearchParams();
+
+    if (filterByStatus !== "all") {
+      params.append('status', filterByStatus);
+    }
+    if (filterByGender !== "all") {
+      params.append('gender', filterByGender);
+    }
+    if (nameQuery) {
+      params.append('name', nameQuery);
+    }
+
+    if (params.toString()) {
+      fetchURL += `?${params.toString()}`;
+    }
+
+    return fetchURL;
+  };
+
   const handleFilterSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-    let fetchURL = "https://rickandmortyapi.com/api/character";
-
-    if (filterByStatus !== "all" && filterByGender !== "all") {
-      fetchURL += `?status=${filterByStatus}&gender=${filterByGender}`;
-    } else if (filterByStatus !== "all") {
-      fetchURL += `?status=${filterByStatus}`;
-    } else if (filterByGender !== "all") {
-      fetchURL += `?gender=${filterByGender}`;
-    }
+    const fetchURL = constructURL(filterQuery);
+    
 
     fetch(fetchURL).then((response) =>
       response.json().then(setCharactersInfo)
@@ -127,12 +143,16 @@ const CharactersTab = () => {
   }
 
   const handleFilterByName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
     setFilterQuery(e.target.value);
 
-    fetch(`https://rickandmortyapi.com/api/character?name=${e.target.value}`).then((response) =>
-      response.json().then(setCharactersInfo)
-    );
-  }
+    const fetchURL = constructURL(e.target.value);
+    console.log(fetchURL);
+
+    fetch(fetchURL)
+      .then((response) => response.json())
+      .then(setCharactersInfo);
+  };
 
   return (
     <div className="max-w-6xl w-full min-h-dvh flex justify-between flex-col bg-white text-black p-7 gap-6">
