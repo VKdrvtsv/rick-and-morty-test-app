@@ -8,12 +8,15 @@ import { EpisodeCard } from "@/components/EpisodeCard";
 import { Character, Episode, EpisodeResponse } from "@/components/types";
 import Loading from "./loading";
 import { Pagination } from "@/components/Pagination";
+import { Popup } from "@/components/Popup";
 
 export default function Home() {
   const [episodesInfo, setEpisodesInfo] = useState<EpisodeResponse>();
   const [isOpenPopup, setIsOpenPopup] = useState(false);
   const [currentEpisode, setCurrentEpisode] = useState<Episode>();
-  const [currentEpisodeCharacters, setCurrentEpisodeCharacters] = useState<Character[]>([]);
+  const [currentEpisodeCharacters, setCurrentEpisodeCharacters] = useState<
+    Character[]
+  >([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFullCharactersList, setIsFullCharactersList] = useState(false);
   const [error, setError] = useState(false);
@@ -34,18 +37,22 @@ export default function Home() {
       .catch(() => {
         setError(true);
         setIsLoading(false);
-      }) 
+      });
   };
 
   useEffect(() => {
     if (currentEpisode) {
       const fetchCharacters = async () => {
         try {
-          const responses = await Promise.all(currentEpisode.characters.map(url => fetch(url)));
-          const data = await Promise.all(responses.map(response => response.json()));
+          const responses = await Promise.all(
+            currentEpisode.characters.map((url) => fetch(url))
+          );
+          const data = await Promise.all(
+            responses.map((response) => response.json())
+          );
           setCurrentEpisodeCharacters(data);
         } catch (error) {
-          console.error('Error fetching additional data:', error);
+          console.error("Error fetching additional data:", error);
         }
 
         setIsLoading(false);
@@ -55,7 +62,6 @@ export default function Home() {
     }
   }, [currentEpisode]);
 
-    
   if (!episodesInfo) {
     return <Loading />;
   }
@@ -71,9 +77,11 @@ export default function Home() {
   const handleClosePopup = () => {
     setIsOpenPopup(false);
     setIsFullCharactersList(false);
-  }
+  };
 
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleOverlayClick = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
     if (e.target === e.currentTarget) {
       handleClosePopup();
     }
@@ -82,15 +90,20 @@ export default function Home() {
   const handleSetPage = (page: number) => {
     setCurrentPage(page);
     if (page > 1) {
-      fetch(`https://rickandmortyapi.com/api/episode?page=${page}`).then((response) =>
-        response.json().then(setEpisodesInfo)
+      fetch(`https://rickandmortyapi.com/api/episode?page=${page}`).then(
+        (response) => response.json().then(setEpisodesInfo)
       );
     } else {
       fetch("https://rickandmortyapi.com/api/episode").then((response) =>
         response.json().then(setEpisodesInfo)
       );
     }
-  }
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   const handleTogglePage = (url: string, direction: "next" | "prev") => {
     if (direction === "next") {
@@ -99,10 +112,13 @@ export default function Home() {
       setCurrentPage(currentPage - 1);
     }
 
-    fetch(url).then((response) =>
-      response.json().then(setEpisodesInfo)
-    );
-  }
+    fetch(url).then((response) => response.json().then(setEpisodesInfo));
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <main className="flex w-full h-full justify-center">
@@ -110,15 +126,17 @@ export default function Home() {
         <div className="flex flex-row justify-between">
           <h2 className="text-3xl">&quot;Rick and Morty&quot; episode list:</h2>
           <div>
-            <Pagination 
-              pages={pages} 
-              currentPage={currentPage} 
-              setPage={handleSetPage} 
-              togglePage={handleTogglePage} 
-              next={episodesInfo.info.next} 
-              prev={episodesInfo.info.prev}/>
+            <Pagination
+              pages={pages}
+              currentPage={currentPage}
+              setPage={handleSetPage}
+              togglePage={handleTogglePage}
+              next={episodesInfo.info.next}
+              prev={episodesInfo.info.prev}
+            />
           </div>
         </div>
+
         <div className="flex flex-col border rounded p-3">
           {episodesInfo.results.map((episode) => {
             return (
@@ -130,60 +148,78 @@ export default function Home() {
             );
           })}
         </div>
+
+        <div className="self-center">
+          <Pagination
+            pages={pages}
+            currentPage={currentPage}
+            setPage={handleSetPage}
+            togglePage={handleTogglePage}
+            next={episodesInfo.info.next}
+            prev={episodesInfo.info.prev}
+          />
+        </div>
       </div>
 
       {isOpenPopup && (
-        <div className="fixed inset-0 bg-[#000000AA] h-screen w-screen overflow-hidden flex items-center justify-center p-10" onClick={handleOverlayClick}>
-          <div className="bg-white text-black p-6 flex flex-col rounded max-w-[600px] min-h-64 min-w-64">
-            <div className="flex flex-row justify-between">
-              <div />
-              <button type="button" onClick={handleClosePopup}>
-                <Cross2Icon />
-              </button>
-            </div>
-
-            <div className="flex items-center justify-center h-full z-10">
-              {isLoading && <Loading />}
-              {error && <p className="text-xl">Oops, something went wrong.</p>}
-              {!isLoading && !error && currentEpisode && (
-                <div>
-                  <div className="flex flex-row gap-5">
-                    <div className="shrink-0">
-                      <Image
-                        src="/episode-image.jpg"
-                        alt="Rick and Morty"
-                        width={150}
-                        height={200}
-                      />
-                    </div>
-                    <div className="flex flex-col justify-center gap-2">
-                      <p className="text-2xl font-medium">
-                        {currentEpisode.name}
-                      </p>
-                      <p>{currentEpisode.air_date}</p>
-                      <div>
-                        <p className="font-medium text-xl">Characters:</p>
-                        {currentEpisode.characters.length <= 3 ? (
-                          <p>{currentEpisodeCharacters.map(char => char.name).join(', ')}</p>
-                        ) : !isFullCharactersList ? (
-                          <div className="flex flex-row gap-1">
-                            <p>{currentEpisodeCharacters.map(char => char.name).slice(0, 3).join(', ')} <button type="button" onClick={handleMore} className="text-green-400">
+        <Popup onClose={handleClosePopup}>
+          <div className="flex items-center justify-center h-full z-10">
+            {isLoading && <Loading />}
+            {error && <p className="text-xl">Oops, something went wrong.</p>}
+            {!isLoading && !error && currentEpisode && (
+              <div>
+                <div className="flex flex-row gap-5">
+                  <div className="shrink-0">
+                    <Image
+                      src="/episode-image.jpg"
+                      alt="Rick and Morty"
+                      width={150}
+                      height={200}
+                    />
+                  </div>
+                  <div className="flex flex-col justify-center gap-2">
+                    <p className="text-2xl font-medium">
+                      {currentEpisode.name}
+                    </p>
+                    <p>{currentEpisode.air_date}</p>
+                    <div>
+                      <p className="font-medium text-xl">Characters:</p>
+                      {currentEpisode.characters.length <= 3 ? (
+                        <p>
+                          {currentEpisodeCharacters
+                            .map((char) => char.name)
+                            .join(", ")}
+                        </p>
+                      ) : !isFullCharactersList ? (
+                        <div className="flex flex-row gap-1">
+                          <p>
+                            {currentEpisodeCharacters
+                              .map((char) => char.name)
+                              .slice(0, 3)
+                              .join(", ")}{" "}
+                            <button
+                              type="button"
+                              onClick={handleMore}
+                              className="text-green-400"
+                            >
                               more...
-                            </button></p>
-                            
-                          </div>
-                        ) : (
-                          <p>{currentEpisodeCharacters.map(char => char.name).join(', ')}</p>
-                        )}
-                      </div>
+                            </button>
+                          </p>
+                        </div>
+                      ) : (
+                        <p>
+                          {currentEpisodeCharacters
+                            .map((char) => char.name)
+                            .join(", ")}
+                        </p>
+                      )}
                     </div>
                   </div>
-
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
-        </div>
+        </Popup>
       )}
     </main>
   );

@@ -39,3 +39,8 @@ export interface Character {
   url: string;     
   created: string; 
 }
+
+export interface CharacterResponse {
+  info: Info;
+  results: Character[];
+}
