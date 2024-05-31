@@ -79,14 +79,16 @@ const CharactersTab = () => {
     });
   };
 
-  const handleTogglePage = (url: string, direction: "next" | "prev") => {
+  const handleTogglePage = (direction: "next" | "prev", url?: string, ) => {
     if (direction === "next") {
       setCurrentPage(currentPage + 1);
     } else {
       setCurrentPage(currentPage - 1);
     }
 
-    fetch(url).then((response) => response.json().then(setCharactersInfo));
+    if (url) {
+      fetch(url).then((response) => response.json().then(setCharactersInfo));
+    }
 
     window.scrollTo({
       top: 0,

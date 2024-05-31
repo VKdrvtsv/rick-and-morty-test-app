@@ -2,13 +2,12 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Cross2Icon } from "@radix-ui/react-icons";
 
 import { EpisodeCard } from "@/components/EpisodeCard";
 import { Character, Episode, EpisodeResponse } from "@/components/types";
-import Loading from "./loading";
 import { Pagination } from "@/components/Pagination";
 import { Popup } from "@/components/Popup";
+import Loading from "./loading";
 
 export default function Home() {
   const [episodesInfo, setEpisodesInfo] = useState<EpisodeResponse>();
@@ -79,14 +78,6 @@ export default function Home() {
     setIsFullCharactersList(false);
   };
 
-  const handleOverlayClick = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => {
-    if (e.target === e.currentTarget) {
-      handleClosePopup();
-    }
-  };
-
   const handleSetPage = (page: number) => {
     setCurrentPage(page);
     if (page > 1) {
@@ -105,14 +96,16 @@ export default function Home() {
     });
   };
 
-  const handleTogglePage = (url: string, direction: "next" | "prev") => {
+  const handleTogglePage = (direction: "next" | "prev", url?: string, ) => {
     if (direction === "next") {
       setCurrentPage(currentPage + 1);
     } else {
       setCurrentPage(currentPage - 1);
     }
 
-    fetch(url).then((response) => response.json().then(setEpisodesInfo));
+    if(url) {
+      fetch(url).then((response) => response.json().then(setEpisodesInfo));
+    }
 
     window.scrollTo({
       top: 0,

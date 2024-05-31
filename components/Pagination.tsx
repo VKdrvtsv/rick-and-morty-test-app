@@ -6,7 +6,7 @@ interface Props {
   pages: number[];
   currentPage?: number;
   setPage: (page: number) => void;
-  togglePage: (url: string, direction: "next" | "prev") => void;
+  togglePage: (direction: "next" | "prev", url?: string) => void;
   next: string | null;
   prev: string | null;
 }
@@ -21,7 +21,7 @@ export const Pagination: FC<Props> = ({ pages, currentPage = 1, setPage, toggleP
           "h-8 w-8 border flex items-center justify-center rounded hover:bg-green-100 hover:border-green-400",
           { "hover:bg-transparent hover:border-inherit": !prev }
         )}
-        onClick={() => togglePage(prev || "", "prev")}
+        onClick={() => togglePage("prev", prev || "", )}
       >
         <ArrowLeftIcon />
       </button>
@@ -49,7 +49,7 @@ export const Pagination: FC<Props> = ({ pages, currentPage = 1, setPage, toggleP
           "h-8 w-8 border flex items-center justify-center rounded hover:bg-green-100 hover:border-green-400",
           { "hover:bg-transparent hover:border-inherit": !next }
         )}
-        onClick={() => togglePage(next || "", "next")}
+        onClick={() => togglePage("next", next || "", )}
       >
         <ArrowRightIcon />
       </button>

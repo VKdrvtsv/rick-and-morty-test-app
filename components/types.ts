@@ -44,3 +44,18 @@ export interface CharacterResponse {
   info: Info;
   results: Character[];
 }
+
+export interface LocationData {
+  id: number;
+  name: string;
+  type: string;
+  dimension: string;
+  residents: {name: string}[];
+  url: string;
+  created: string;
+}
+
+export interface LocationResponse {
+  info: Info;
+  results: LocationData[];
+}

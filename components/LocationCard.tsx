@@ -1,15 +1,15 @@
 import { FC } from "react";
-import { Episode } from "./types";
+import { LocationData } from "./types";
 import Image from "next/image";
 
 interface Props {
-  episode: Episode,
-  onClick: (state: boolean, id: string) => void,
+  location: LocationData,
+  onClick: (state: boolean, id: number) => void,
 }
 
-export const EpisodeCard: FC<Props> = ({episode, onClick}) => {
+export const LocationCard: FC<Props> = ({location, onClick}) => {
   const handleMoreClick = () => {
-    onClick(true, episode.url);
+    onClick(true, location.id);
   }
 
   return (
@@ -17,8 +17,8 @@ export const EpisodeCard: FC<Props> = ({episode, onClick}) => {
       <div className="flex flex-row gap-5">
         <Image src="/episode-image.jpg" alt="Rick and Morty" width={60} height={80}/>
         <div className="flex flex-col h-20 justify-center gap-2">
-          <p className="md:text-lg text-base font-medium">{episode.id}. {episode.name}</p>
-          <p>{episode.air_date}</p>
+          <p className="md:text-lg text-base font-medium">{location.id}. {location.name}</p>
+          <p><b>Type:</b> {location.type}</p>
         </div>
       </div>
 
