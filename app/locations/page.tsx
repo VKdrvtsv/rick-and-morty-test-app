@@ -255,7 +255,7 @@ const LocationsTab = () => {
   return (
     <div className="max-w-6xl w-full min-h-dvh flex justify-between flex-col bg-white text-black p-7 gap-6">
       <div className="flex flex-row justify-between">
-        <h2 className="text-3xl">&quot;Rick and Morty&quot; location list:</h2>
+        <h2 className="md:text-3xl text-xl">&quot;Rick and Morty&quot; location list:</h2>
         <div>
           {locationInfo.info && (
             <Pagination
@@ -285,7 +285,7 @@ const LocationsTab = () => {
       <div className="self-center">
         {locationInfo.info && (
           <Pagination
-            pages={pages}
+            pages={pageNumbersToShow}
             currentPage={currentPage}
             setPage={handleSetPage}
             togglePage={handleTogglePage}
@@ -312,13 +312,13 @@ const LocationsTab = () => {
                     />
                   </div>
                   <div className="flex flex-col justify-center gap-2">
-                    <p className="text-2xl font-medium">
+                    <p className="md:text-2xl text-lg font-medium">
                       {currentLocation.name}
                     </p>
                     <p><b>Type: </b>{currentLocation.type}</p>
                     <p><b>Dimension: </b>{currentLocation.dimension}</p>
                     <div className="">
-                      <p className="font-medium text-xl">Residents:</p>
+                      <p className="font-medium md:text-xl text-lg">Residents:</p>
                       {!currentLocation.residents.length && (
                         <p>There is no residents on this location.</p>
                       )}
@@ -342,7 +342,7 @@ const LocationsTab = () => {
                           </p>
                         </div>
                       ) : (
-                        <p className="max-h-96 overflow-y-auto">
+                        <p className="md:max-h-96 max-h-64 overflow-y-auto">
                           {currentLocation.residents.map(res => res.name).join(", ")}
                         </p>
                       )}

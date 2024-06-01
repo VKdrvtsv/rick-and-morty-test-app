@@ -117,7 +117,7 @@ export default function Home() {
     <main className="flex w-full h-full justify-center">
       <div className="max-w-6xl w-full h-full flex justify-between flex-col bg-white text-black p-7 gap-6">
         <div className="flex flex-row justify-between">
-          <h2 className="text-3xl">&quot;Rick and Morty&quot; episode list:</h2>
+          <h2 className="md:text-3xl text-xl">&quot;Rick and Morty&quot; episode list:</h2>
           <div>
             <Pagination
               pages={pages}
@@ -161,7 +161,7 @@ export default function Home() {
             {error && <p className="text-xl">Oops, something went wrong.</p>}
             {!isLoading && !error && currentEpisode && (
               <div>
-                <div className="flex flex-row gap-5">
+                <div className="flex flex-row gap-5 max-h-[500px]">
                   <div className="shrink-0">
                     <Image
                       src="/episode-image.jpg"
@@ -171,12 +171,12 @@ export default function Home() {
                     />
                   </div>
                   <div className="flex flex-col justify-center gap-2">
-                    <p className="text-2xl font-medium">
+                    <p className="md:text-2xl text-lg font-medium">
                       {currentEpisode.name}
                     </p>
                     <p>{currentEpisode.air_date}</p>
                     <div>
-                      <p className="font-medium text-xl">Characters:</p>
+                      <p className="font-medium  md:text-xl text-lg">Characters:</p>
                       {currentEpisode.characters.length <= 3 ? (
                         <p>
                           {currentEpisodeCharacters
@@ -200,7 +200,7 @@ export default function Home() {
                           </p>
                         </div>
                       ) : (
-                        <p>
+                        <p className="md:max-h-96 max-h-64 overflow-y-auto">
                           {currentEpisodeCharacters
                             .map((char) => char.name)
                             .join(", ")}

@@ -157,7 +157,7 @@ const CharactersTab = () => {
   return (
     <div className="max-w-6xl w-full min-h-dvh flex justify-between flex-col bg-white text-black p-7 gap-6">
       <div className="flex flex-row justify-between">
-        <h2 className="text-3xl">&quot;Rick and Morty&quot; character list:</h2>
+        <h2 className="md:text-3xl text-xl">&quot;Rick and Morty&quot; character list:</h2>
 
         <div className="flex flex-row gap-4">
           <button type="button" onClick={() => setIsOpenPopup(true)}>
@@ -218,7 +218,7 @@ const CharactersTab = () => {
               <div className="flex flex-col gap-1">
                 <p className="font-bold">Gender</p>
                 <RadioGroup.Root
-                  className="flex flex-row gap-3"
+                  className="flex flex-row flex-wrap gap-3"
                   aria-label="View density"
                   onValueChange={handleFilterByGender}
                   value={filterByGender}
