@@ -1,36 +1,7 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+It’s an app for "Rick and Morty" that allows you to check information about the episodes, characters, and locations of this cartoon. This project is built using Next.js, Tailwind CSS, Radix-UI, axios, REST API, and GraphQL.
 
-## Getting Started
+The first page, Episodes, displays a paginated list of episodes with basic information like name and air date. This list also has a "More Information" button that opens a popup with the same info, plus a list of characters. I used the fetch() method on this page with the REST API.
 
-First, run the development server:
+The second page, Characters, shows a paginated list of characters with basic information like name, species, gender, status, and image. These list items don’t have a modal window, but on this page, there is a popup for choosing filter parameters. These filters are applied only after submitting the form; if you just close the popup, your choices are saved, but the filtration doesn't work. Additionally, you can search for characters using the search bar on the page. I also used the fetch() method on this page with the REST API.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+The third page, Locations, shows a paginated list of locations with basic information like name and type. This list also has a "More Information" button that opens a popup with the same info, plus a list of characters and the dimension. Here, I used axios with GraphQL. I used axios here to demonstrate my knowledge of how to use it, but I believe that for GET requests, fetch() is a little more convenient.
