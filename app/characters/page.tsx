@@ -1,6 +1,6 @@
 "use client";
 
-import { CharacterResponse } from "@/components/types";
+import { CharacterResponse } from "@/utils/types";
 import { useEffect, useState } from "react";
 import cn from "classnames";
 import {
@@ -13,6 +13,7 @@ import Loading from "../loading";
 import { Pagination } from "@/components/Pagination";
 import { CharacterCard } from "@/components/Character";
 import { Popup } from "@/components/Popup";
+import { setPage } from "@/utils/setPage";
 
 const CharactersTab = () => {
   const [charactersInfo, setCharactersInfo] = useState<CharacterResponse>();
@@ -23,11 +24,10 @@ const CharactersTab = () => {
   const [isOpenPopup, setIsOpenPopup] = useState(false);
   const [filterByStatus, setFilterByStatus] = useState("all");
   const [filterByGender, setFilterByGender] = useState("all");
+  const baseURL = "https://rickandmortyapi.com/api/character";
 
   useEffect(() => {
-    fetch("https://rickandmortyapi.com/api/character").then((response) =>
-      response.json().then(setCharactersInfo)
-    );
+    fetch(baseURL).then((response) => response.json().then(setCharactersInfo));
   }, []);
 
   if (!charactersInfo) {
@@ -62,24 +62,10 @@ const CharactersTab = () => {
   const pageNumbersToShow = takePageNumbers();
 
   const handleSetPage = (page: number) => {
-    setCurrentPage(page);
-    if (page > 1) {
-      fetch(`https://rickandmortyapi.com/api/character?page=${page}`).then(
-        (response) => response.json().then(setCharactersInfo)
-      );
-    } else {
-      fetch("https://rickandmortyapi.com/api/character").then((response) =>
-        response.json().then(setCharactersInfo)
-      );
-    }
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    setPage(baseURL, page, setCurrentPage, setCharactersInfo);
   };
 
-  const handleTogglePage = (direction: "next" | "prev", url?: string, ) => {
+  const handleTogglePage = (direction: "next" | "prev", url?: string) => {
     if (direction === "next") {
       setCurrentPage(currentPage + 1);
     } else {
@@ -108,20 +94,18 @@ const CharactersTab = () => {
     setFilterByGender(status);
   };
 
-  let baseURL = "https://rickandmortyapi.com/api/character";
-
   const constructURL = (nameQuery: string) => {
     let fetchURL = baseURL;
     let params = new URLSearchParams();
 
     if (filterByStatus !== "all") {
-      params.append('status', filterByStatus);
+      params.append("status", filterByStatus);
     }
     if (filterByGender !== "all") {
-      params.append('gender', filterByGender);
+      params.append("gender", filterByGender);
     }
     if (nameQuery) {
-      params.append('name', nameQuery);
+      params.append("name", nameQuery);
     }
 
     if (params.toString()) {
@@ -131,16 +115,16 @@ const CharactersTab = () => {
     return fetchURL;
   };
 
-  const handleFilterSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleFilterSubmit = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault();
     const fetchURL = constructURL(filterQuery);
-    
 
-    fetch(fetchURL).then((response) =>
-      response.json().then(setCharactersInfo)
-    );
+    fetch(fetchURL).then((response) => response.json().then(setCharactersInfo));
     setIsOpenPopup(false);
-  }
+    setCurrentPage(1);
+  };
 
   const handleFilterByName = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -152,12 +136,16 @@ const CharactersTab = () => {
     fetch(fetchURL)
       .then((response) => response.json())
       .then(setCharactersInfo);
+
+    setCurrentPage(1);
   };
 
   return (
     <div className="max-w-6xl w-full min-h-dvh flex justify-between flex-col bg-white text-black p-7 gap-6">
       <div className="flex flex-row justify-between">
-        <h2 className="md:text-3xl text-xl">&quot;Rick and Morty&quot; character list:</h2>
+        <h2 className="md:text-3xl text-xl">
+          &quot;Rick and Morty&quot; character list:
+        </h2>
 
         <div className="flex flex-row gap-4">
           <button type="button" onClick={() => setIsOpenPopup(true)}>
@@ -347,7 +335,13 @@ const CharactersTab = () => {
               </div>
 
               <div className="flex w-full items-center justify-center mt-5 ">
-                <button type="submit" onClick={handleFilterSubmit} className="flex self-center border py-2 px-4 rounded hover:bg-green-100 hover:border-green-400">Submit</button>
+                <button
+                  type="submit"
+                  onClick={handleFilterSubmit}
+                  className="flex self-center border py-2 px-4 rounded hover:bg-green-100 hover:border-green-400"
+                >
+                  Submit
+                </button>
               </div>
             </form>
           </div>

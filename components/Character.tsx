@@ -1,7 +1,7 @@
 "use client";
 
 import { FC } from "react";
-import { Character } from "./types";
+import { Character } from "../utils/types";
 import Image from "next/image";
 
 interface Props {

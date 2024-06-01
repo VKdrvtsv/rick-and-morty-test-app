@@ -4,10 +4,11 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import { EpisodeCard } from "@/components/EpisodeCard";
-import { Character, Episode, EpisodeResponse } from "@/components/types";
+import { Character, Episode, EpisodeResponse } from "@/utils/types";
 import { Pagination } from "@/components/Pagination";
 import { Popup } from "@/components/Popup";
 import Loading from "./loading";
+import { setPage } from "@/utils/setPage";
 
 export default function Home() {
   const [episodesInfo, setEpisodesInfo] = useState<EpisodeResponse>();
@@ -21,11 +22,10 @@ export default function Home() {
   const [error, setError] = useState(false);
   const pages = [];
   const [currentPage, setCurrentPage] = useState(1);
+  const baseURL = "https://rickandmortyapi.com/api/episode";
 
   useEffect(() => {
-    fetch("https://rickandmortyapi.com/api/episode").then((response) =>
-      response.json().then(setEpisodesInfo)
-    );
+    fetch(baseURL).then((response) => response.json().then(setEpisodesInfo));
   }, []);
 
   const handleOpenPopup = async (state: boolean, url: string) => {
@@ -79,31 +79,17 @@ export default function Home() {
   };
 
   const handleSetPage = (page: number) => {
-    setCurrentPage(page);
-    if (page > 1) {
-      fetch(`https://rickandmortyapi.com/api/episode?page=${page}`).then(
-        (response) => response.json().then(setEpisodesInfo)
-      );
-    } else {
-      fetch("https://rickandmortyapi.com/api/episode").then((response) =>
-        response.json().then(setEpisodesInfo)
-      );
-    }
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    setPage(baseURL, page, setCurrentPage, setEpisodesInfo);
   };
 
-  const handleTogglePage = (direction: "next" | "prev", url?: string, ) => {
+  const handleTogglePage = (direction: "next" | "prev", url?: string) => {
     if (direction === "next") {
       setCurrentPage(currentPage + 1);
     } else {
       setCurrentPage(currentPage - 1);
     }
 
-    if(url) {
+    if (url) {
       fetch(url).then((response) => response.json().then(setEpisodesInfo));
     }
 
@@ -117,7 +103,9 @@ export default function Home() {
     <main className="flex w-full h-full justify-center">
       <div className="max-w-6xl w-full h-full flex justify-between flex-col bg-white text-black p-7 gap-6">
         <div className="flex flex-row justify-between">
-          <h2 className="md:text-3xl text-xl">&quot;Rick and Morty&quot; episode list:</h2>
+          <h2 className="md:text-3xl text-xl">
+            &quot;Rick and Morty&quot; episode list:
+          </h2>
           <div>
             <Pagination
               pages={pages}
@@ -176,7 +164,9 @@ export default function Home() {
                     </p>
                     <p>{currentEpisode.air_date}</p>
                     <div>
-                      <p className="font-medium  md:text-xl text-lg">Characters:</p>
+                      <p className="font-medium  md:text-xl text-lg">
+                        Characters:
+                      </p>
                       {currentEpisode.characters.length <= 3 ? (
                         <p>
                           {currentEpisodeCharacters

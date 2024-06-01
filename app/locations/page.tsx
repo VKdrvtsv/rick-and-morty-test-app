@@ -1,13 +1,14 @@
 "use client";
 
 import { Pagination } from "@/components/Pagination";
-import { Character, LocationData, LocationResponse } from "@/components/types";
+import { LocationData, LocationResponse } from "@/utils/types";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Loading from "../loading";
 import Image from "next/image";
 import { Popup } from "@/components/Popup";
 import { LocationCard } from "@/components/LocationCard";
+import { fetchDataGraphQL } from "@/utils/grahhQLFetch";
 
 const LocationsTab = () => {
   const [locationInfo, setLocationInfo] = useState<LocationResponse>();
@@ -21,47 +22,7 @@ const LocationsTab = () => {
   const pages: number[] = [];
 
   useEffect(() => {
-    const fetchData = async () => {
-      const query = `
-          query {
-            locations(page: 1) {
-              info {
-                count
-                pages
-                next
-                prev
-              }
-              results {
-                id
-                name
-                type
-                dimension
-                residents {
-                  name
-                }
-                created
-              }
-            }
-          }
-        `;
-
-      const url = new URL("https://rickandmortyapi.com/graphql");
-      url.searchParams.append("query", query);
-
-      try {
-        const response = await axios.get(url.toString(), {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        setLocationInfo(response.data.data.locations);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
+    fetchDataGraphQL(1, setLocationInfo);
   }, []);
 
   if (!locationInfo) {
@@ -71,7 +32,9 @@ const LocationsTab = () => {
   const handleOpenPopup = async (state: boolean, id: number) => {
     setIsOpenPopup(state);
     setIsLoading(true);
-    const curLocation = await locationInfo.results.find(location => location.id === id);
+    const curLocation = await locationInfo.results.find(
+      (location) => location.id === id
+    );
     setCurrentLocation(curLocation);
     setIsLoading(false);
   };
@@ -101,10 +64,7 @@ const LocationsTab = () => {
         return pages.slice(currentPage - 3, currentPage + 1);
       }
 
-      return pages.slice(
-        locationInfo.info.pages - 4,
-        locationInfo.info.pages
-      );
+      return pages.slice(locationInfo.info.pages - 4, locationInfo.info.pages);
     }
 
     return pages;
@@ -115,81 +75,9 @@ const LocationsTab = () => {
   const handleSetPage = async (page: number) => {
     setCurrentPage(page);
     if (page > 1) {
-      const query = `
-          query {
-            locations(page: ${page}) {
-              info {
-                count
-                pages
-                next
-                prev
-              }
-              results {
-                id
-                name
-                type
-                dimension
-                residents {
-                  name
-                }
-                created
-              }
-            }
-          }
-        `;
-
-      const url = new URL("https://rickandmortyapi.com/graphql");
-      url.searchParams.append("query", query);
-
-      try {
-        const response = await axios.get(url.toString(), {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        setLocationInfo(response.data.data.locations);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+      fetchDataGraphQL(page, setLocationInfo);
     } else {
-      const query = `
-          query {
-            locations(page: 1) {
-              info {
-                count
-                pages
-                next
-                prev
-              }
-              results {
-                id
-                name
-                type
-                dimension
-                residents {
-                  name
-                }
-                created
-              }
-            }
-          }
-        `;
-
-      const url = new URL("https://rickandmortyapi.com/graphql");
-      url.searchParams.append("query", query);
-
-      try {
-        const response = await axios.get(url.toString(), {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        setLocationInfo(response.data.data.locations);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+      fetchDataGraphQL(1, setLocationInfo);
     }
 
     window.scrollTo({
@@ -208,43 +96,7 @@ const LocationsTab = () => {
       setCurrentPage(currentPage - 1);
       searchPage = currentPage - 1;
     }
-    const query = `
-          query {
-            locations(page: ${searchPage}) {
-              info {
-                count
-                pages
-                next
-                prev
-              }
-              results {
-                id
-                name
-                type
-                dimension
-                residents {
-                  name
-                }
-                created
-              }
-            }
-          }
-        `;
-
-      const url = new URL("https://rickandmortyapi.com/graphql");
-      url.searchParams.append("query", query);
-
-      try {
-        const response = await axios.get(url.toString(), {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        setLocationInfo(response.data.data.locations);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+    fetchDataGraphQL(searchPage, setLocationInfo);
 
     window.scrollTo({
       top: 0,
@@ -255,7 +107,9 @@ const LocationsTab = () => {
   return (
     <div className="max-w-6xl w-full min-h-dvh flex justify-between flex-col bg-white text-black p-7 gap-6">
       <div className="flex flex-row justify-between">
-        <h2 className="md:text-3xl text-xl">&quot;Rick and Morty&quot; location list:</h2>
+        <h2 className="md:text-3xl text-xl">
+          &quot;Rick and Morty&quot; location list:
+        </h2>
         <div>
           {locationInfo.info && (
             <Pagination
@@ -271,15 +125,16 @@ const LocationsTab = () => {
       </div>
 
       <div className="flex flex-col border rounded p-3">
-        {locationInfo.results && locationInfo.results.map((location) => {
-          return (
-            <LocationCard
-              location={location}
-              onClick={handleOpenPopup}
-              key={location.id}
-            />
-          );
-        })}
+        {locationInfo.results &&
+          locationInfo.results.map((location) => {
+            return (
+              <LocationCard
+                location={location}
+                onClick={handleOpenPopup}
+                key={location.id}
+              />
+            );
+          })}
       </div>
 
       <div className="self-center">
@@ -315,23 +170,34 @@ const LocationsTab = () => {
                     <p className="md:text-2xl text-lg font-medium">
                       {currentLocation.name}
                     </p>
-                    <p><b>Type: </b>{currentLocation.type}</p>
-                    <p><b>Dimension: </b>{currentLocation.dimension}</p>
+                    <p>
+                      <b>Type: </b>
+                      {currentLocation.type}
+                    </p>
+                    <p>
+                      <b>Dimension: </b>
+                      {currentLocation.dimension}
+                    </p>
                     <div className="">
-                      <p className="font-medium md:text-xl text-lg">Residents:</p>
+                      <p className="font-medium md:text-xl text-lg">
+                        Residents:
+                      </p>
                       {!currentLocation.residents.length && (
                         <p>There is no residents on this location.</p>
                       )}
                       {currentLocation.residents.length <= 3 ? (
                         <p>
                           {currentLocation.residents
-                            .map(res => res.name)
+                            .map((res) => res.name)
                             .join(", ")}
                         </p>
                       ) : !isFullCharactersList ? (
                         <div className="flex flex-row gap-1">
                           <p>
-                            {currentLocation.residents.map(res => res.name).slice(0, 3).join(", ")}{" "}
+                            {currentLocation.residents
+                              .map((res) => res.name)
+                              .slice(0, 3)
+                              .join(", ")}{" "}
                             <button
                               type="button"
                               onClick={handleMore}
@@ -343,7 +209,9 @@ const LocationsTab = () => {
                         </div>
                       ) : (
                         <p className="md:max-h-96 max-h-64 overflow-y-auto">
-                          {currentLocation.residents.map(res => res.name).join(", ")}
+                          {currentLocation.residents
+                            .map((res) => res.name)
+                            .join(", ")}
                         </p>
                       )}
                     </div>

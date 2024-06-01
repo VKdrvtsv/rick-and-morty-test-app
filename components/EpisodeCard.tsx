@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Episode } from "./types";
+import { Episode } from "../utils/types";
 import Image from "next/image";
 
 interface Props {

@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { LocationData } from "./types";
+import { LocationData } from "../utils/types";
 import Image from "next/image";
 
 interface Props {
